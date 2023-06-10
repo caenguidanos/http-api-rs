@@ -13,3 +13,6 @@ pnpm-lock.yaml
 .env.jaeger
 .env.postgres
 .env.swagger
+
+#macos
+.DS_Store
