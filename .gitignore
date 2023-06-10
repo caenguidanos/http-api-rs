@@ -1,1 +1,15 @@
+# rust
 /target
+Cargo.lock
+
+# node
+/node_modules
+yarn.lock
+package-lock.json
+pnpm-lock.yaml
+
+# env
+.env
+.env.jaeger
+.env.postgres
+.env.swagger
