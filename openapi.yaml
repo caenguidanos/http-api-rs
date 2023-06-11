@@ -1,0 +1,94 @@
+openapi: 3.0.0
+info:
+  title: HTTP API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+paths:
+  /healthz:
+    get:
+      summary: Public health check endpoint.
+      responses:
+        '200':
+          description: OK
+
+  /ecommerce/product:
+    get:
+      summary: Returns a list of products.
+      security:
+        - Identity: [ ecommerce.product:read ]
+      responses:
+        '200':
+          description: A JSON object
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+
+        '401':
+          description: Unauthorized
+
+        '403':
+          description: Invalid permissions
+
+    put:
+      summary: Creates a new product.
+      security:
+        - Identity: [ ecommerce.product:create ]
+      requestBody:
+        description: Product info
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+
+      responses:
+        '202':
+          description: Accepted
+
+        '400':
+          description: Bad request
+
+        '401':
+          description: Unauthorized
+
+        '403':
+          description: Invalid permissions
+
+components:
+  securitySchemes:
+    Identity:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: { OAUTH_DOMAIN }/authorize?audience={OAUTH_AUDIENCE}
+          tokenUrl: { OAUTH_DOMAIN }/oauth/token
+          scopes:
+            ecommerce.product:read: Read products
+            ecommerce.product:create: Create products
+            ecommerce.product:delete: Delete products
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 4548cc0d-2379-427f-93e2-44ac0a0333c6
+        name:
+          type: string
+          example: Fender Stratocaster American Standard
+        price:
+          type: number
+          example: 1000000
+          description: Value with cents greater than 0.
+        currency:
+          type: string
+          enum:
+            - EUR
+            - USD
