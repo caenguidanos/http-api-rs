@@ -8,36 +8,30 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-
       - name: Generate lockfile
         if: hashFiles('Cargo.lock') == ''
         uses: actions-rs/cargo@v1
         with:
           command: generate-lockfile
 
-      - name: Restore cache
-        id: target-cache-restore
-        uses: actions/cache/restore@v3
+      - uses: actions/cache@v3
         with:
           path: |
-            target
-          key: ${{ runner.os }}-target
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
 
       - uses: actions-rs/cargo@v1
         with:
           command: build
           args: --locked --all-features --all-targets
-
-      - name: Save cache
-        id: target-cache-save
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            target
-          key: ${{ steps.target-cache-restore.outputs.cache-primary-key }}
 
   lint:
     runs-on: ubuntu-latest
@@ -46,18 +40,26 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Generate lockfile
+        if: hashFiles('Cargo.lock') == ''
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-
-      - run: rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
-
-      - name: Restore cache
-        uses: actions/cache/restore@v3
-        with:
-          path: |
-            target
-          key: ${{ runner.os }}-target
+          components: clippy
 
       - uses: actions-rs/cargo@v1
         with:
@@ -99,22 +101,25 @@ jobs:
           PGUSER: root
           PGPASSWORD: root
 
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-
       - name: Generate lockfile
         if: hashFiles('Cargo.lock') == ''
         uses: actions-rs/cargo@v1
         with:
           command: generate-lockfile
 
-      - name: Restore cache
-        uses: actions/cache/restore@v3
+      - uses: actions/cache@v3
         with:
           path: |
-            target
-          key: ${{ runner.os }}-target
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
 
       - name: Install cargo-llvm-cov
         uses: taiki-e/install-action@cargo-llvm-cov
@@ -122,4 +127,5 @@ jobs:
       - name: Generate code coverage
         run: cargo llvm-cov --locked --all-features --all-targets
         env:
+          CARGO_TERM_COLOR: always
           DATABASE_TEMPLATE: ecommerce_template
