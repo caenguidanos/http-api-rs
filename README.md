@@ -2,11 +2,12 @@
 
 Template for production ready HTTP servers in Rust.
 
-- **Database**: Postgres
 - **HTTP Server**: Axum
-- **Security**: OAuth2 RBAC
-- **Telemetry**: OpenTelemetry/Jaeger
-- **OpenApi 3.0**: Swagger
+- **Database**: Postgres
+- **Identity**: OAuth2 - RBAC
+- **Observability**: OpenTelemetry/Jaeger
+- **Documentation**: Openapi 3.0 / SwaggerUI
+- **CI**: Github Actions
 
 ### Required dependencies
 
@@ -89,11 +90,30 @@ More info [here](https://www.postgresql.org/docs/current/manage-ag-templatedbs.h
 ```shell
 export DATABASE_TEMPLATE=ecommerce_template
 
-cargo test --release
+# without coverage
+cargo test --locked --all-features --all-targets
+
+# with coverage
+cargo llvm-cov --open
 ```
+
+> Run `cargo +nightly install cargo-llvm-cov --locked` if **cargo-llvm-cov** is not installed yet in your system
 
 ### Screenshots
 
+#### Swagger UI
+
 ![swagger](./static/img/swagger.png)
+
+#### Jaeger trace
+
 ![jaeger](./static/img/jaeger.png)
+
+#### Postgres GUI
+
 ![pgweb](./static/img/pgweb.png)
+
+#### llvm-cov
+
+![cov](./static/img/cov.png)
+![cov_2](./static/img/cov_2.png)
