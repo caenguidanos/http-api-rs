@@ -26,6 +26,7 @@ pub struct SaveProductInput {
 impl common::application::usecase::UseCase for SaveProduct {
     type Input = SaveProductInput;
     type Output = ();
+
     type Error = common::domain::Error;
 
     async fn exec(&self, input: Self::Input) -> Result<Self::Output, Self::Error> {
@@ -37,8 +38,5 @@ impl common::application::usecase::UseCase for SaveProduct {
             .save(&new_product)
             .instrument(tracing::info_span!("Invoke ProductRepository.save"))
             .await
-            .map(Self::Output::from)?;
-
-        Ok(())
     }
 }

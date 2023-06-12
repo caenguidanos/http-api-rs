@@ -28,8 +28,8 @@ connect(
 			.withServiceBinding("db", database)
 			.withDirectory("/app", hostDir, EXCLUDE)
 			.withWorkdir("/app")
-			.withEnvVariable("TEST_DATABASE_HOST", "db")
-			.withEnvVariable("TEST_DATABASE_TEMPLATE", process.env.TEST_DATABASE_TEMPLATE);
+			.withEnvVariable("DATABASE_HOST", "db")
+			.withEnvVariable("DATABASE_TEMPLATE", process.env.DATABASE_TEMPLATE);
 
 		await server.withExec(["cargo", "test"]).stderr();
 	},

@@ -88,28 +88,28 @@ mod tests {
 
     use super::*;
 
-    async fn fixture() -> backoffice::domain::product::DynProductRepository<common::domain::Error> {
-        let database = libs::pg::tests::UnsafePostgresDatabase::new().await;
+    async fn compose_repository_fixture() -> backoffice::domain::product::DynProductRepository<common::domain::Error> {
+        let database = libs::pg::fixture::PostgresDatabaseFixture::new().await;
 
         Arc::new(PostgresProductRepository::new(database.pool))
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_empty_database_when_get_then_return_empty_vec() {
-        let repository = fixture().await;
+        let repository = compose_repository_fixture().await;
 
         assert!(repository.get().await.unwrap().is_empty());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_products_on_database_when_get_then_return_fulfilled_vec() {
-        let repository = fixture().await;
+        let repository = compose_repository_fixture().await;
 
-        let p1 = backoffice::domain::product::tests::UnsafeProductBuilder::default();
-        let p2 = backoffice::domain::product::tests::UnsafeProductBuilder::default();
-        let p3 = backoffice::domain::product::tests::UnsafeProductBuilder::default();
-        let p4 = backoffice::domain::product::tests::UnsafeProductBuilder::default();
-        let p5 = backoffice::domain::product::tests::UnsafeProductBuilder::default();
+        let p1 = backoffice::domain::product::fixture::ProductBuilder::default();
+        let p2 = backoffice::domain::product::fixture::ProductBuilder::default();
+        let p3 = backoffice::domain::product::fixture::ProductBuilder::default();
+        let p4 = backoffice::domain::product::fixture::ProductBuilder::default();
+        let p5 = backoffice::domain::product::fixture::ProductBuilder::default();
 
         tokio::join!(
             p1.save(&repository),
@@ -124,7 +124,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_empty_database_when_get_by_id_then_return_none() {
-        let repository = fixture().await;
+        let repository = compose_repository_fixture().await;
 
         let id = backoffice::domain::product::ProductId::default();
 
@@ -133,9 +133,9 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_products_on_database_when_get_by_id_then_return_some() {
-        let repository = fixture().await;
+        let repository = compose_repository_fixture().await;
 
-        let product = backoffice::domain::product::tests::UnsafeProductBuilder::default();
+        let product = backoffice::domain::product::fixture::ProductBuilder::default();
         product.save(&repository).await;
 
         assert!(repository.get_by_id(&product.id).await.unwrap().is_some());
@@ -143,18 +143,18 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_empty_database_when_save_then_return_ok() {
-        let repository = fixture().await;
+        let repository = compose_repository_fixture().await;
 
-        let product = backoffice::domain::product::tests::UnsafeProductBuilder::default();
+        let product = backoffice::domain::product::fixture::ProductBuilder::default();
 
         assert!(repository.save(&product.to_entity()).await.is_ok());
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_products_on_database_when_save_with_same_id_then_return_err() {
-        let repository = fixture().await;
+        let repository = compose_repository_fixture().await;
 
-        let product = backoffice::domain::product::tests::UnsafeProductBuilder::default();
+        let product = backoffice::domain::product::fixture::ProductBuilder::default();
 
         assert!(repository.save(&product.to_entity()).await.is_ok());
 

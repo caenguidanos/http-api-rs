@@ -21,7 +21,7 @@ async fn main() {
 
     std::panic::set_hook(Box::new(tracing_panic::panic_hook));
 
-    server::HttpServer::unsafe_serve(&settings).await;
+    server::HttpServer::serve(&settings).await;
 }
 
 fn init_telemetry() {

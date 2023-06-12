@@ -80,7 +80,7 @@ Database **seed** is injected with `ci/init/pg_init.sh`.
 It's required [Node](https://nodejs.org/en) installed on host for executing the pipeline.
 
 ```shell
-export TEST_DATABASE_TEMPLATE=ecommerce_template
+export DATABASE_TEMPLATE=ecommerce_template
 
 make test
 ```
@@ -102,7 +102,7 @@ docker compose up -V --force-recreate postgres
 #### Run tests
 
 ```shell
-export TEST_DATABASE_TEMPLATE=ecommerce_template
+export DATABASE_TEMPLATE=ecommerce_template
 
 cargo test --release
 ```

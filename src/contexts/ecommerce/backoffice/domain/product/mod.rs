@@ -54,13 +54,13 @@ impl Product {
 }
 
 #[cfg(test)]
-pub mod tests {
+pub mod fixture {
     use crate::contexts::ecommerce::common;
     use crate::libs;
 
     use super::*;
 
-    pub struct UnsafeProductBuilder {
+    pub struct ProductBuilder {
         pub id: ProductId,
         pub name: ProductName,
         pub price: ProductPrice,
@@ -69,7 +69,7 @@ pub mod tests {
         pub __updated_at__: ProductTimeStamp,
     }
 
-    impl Default for UnsafeProductBuilder {
+    impl Default for ProductBuilder {
         fn default() -> Self {
             let now = ProductTimeStamp::default();
 
@@ -87,47 +87,7 @@ pub mod tests {
         }
     }
 
-    impl UnsafeProductBuilder {
-        pub fn set_id(&mut self, value: &ProductId) -> &mut Self {
-            self.id = value.clone();
-            self
-        }
-
-        pub fn try_id(&mut self, value: impl Into<String>) -> &mut Self {
-            self.id = ProductId::try_from(value.into()).unwrap();
-            self
-        }
-
-        pub fn set_name(&mut self, value: &ProductName) -> &mut Self {
-            self.name = value.clone();
-            self
-        }
-
-        pub fn try_name(&mut self, value: impl Into<String>) -> &mut Self {
-            self.name = ProductName::try_from(value.into()).unwrap();
-            self
-        }
-
-        pub fn set_price(&mut self, value: &ProductPrice) -> &mut Self {
-            self.price = value.clone();
-            self
-        }
-
-        pub fn try_price(&mut self, value: impl Into<i32>) -> &mut Self {
-            self.price = ProductPrice::try_from(value.into()).unwrap();
-            self
-        }
-
-        pub fn set_currency(&mut self, value: &ProductCurrency) -> &mut Self {
-            self.currency = value.clone();
-            self
-        }
-
-        pub fn try_currency(&mut self, value: impl Into<String>) -> &mut Self {
-            self.currency = ProductCurrency::try_from(value.into()).unwrap();
-            self
-        }
-
+    impl ProductBuilder {
         pub fn to_entity(&self) -> Product {
             let entity = Product {
                 id: self.id,

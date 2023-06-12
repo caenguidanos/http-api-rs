@@ -9,7 +9,7 @@ mod settings;
 pub struct HttpContext;
 
 impl HttpContext {
-    pub async fn unsafe_compose() -> Router {
+    pub async fn compose() -> Router {
         let settings = settings::Settings::new();
 
         let db = libs::pg::ConnectionManager::new_pool(&settings.database_url, None)

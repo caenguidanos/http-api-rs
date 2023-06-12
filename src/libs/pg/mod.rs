@@ -22,19 +22,19 @@ impl ConnectionManager {
 }
 
 #[cfg(test)]
-pub mod tests {
+pub mod fixture {
     use rand::Rng;
 
     use super::*;
 
     #[derive(Clone)]
-    pub struct UnsafePostgresDatabase {
+    pub struct PostgresDatabaseFixture {
         pub pool: ConnectionPool,
-        pub configuration: PostgresDatabaseConfiguration,
+        pub configuration: PostgresDatabaseFixtureConfiguration,
     }
 
     #[derive(Clone, Debug)]
-    pub struct PostgresDatabaseConfiguration {
+    pub struct PostgresDatabaseFixtureConfiguration {
         pub user: String,
         pub pass: String,
         pub host: String,
@@ -42,7 +42,7 @@ pub mod tests {
         pub name: String,
     }
 
-    impl PostgresDatabaseConfiguration {
+    impl PostgresDatabaseFixtureConfiguration {
         pub fn build_uri(&self) -> String {
             format!(
                 "postgresql://{}:{}@{}:{}/{}?sslmode=disable",
@@ -51,25 +51,25 @@ pub mod tests {
         }
     }
 
-    impl Default for PostgresDatabaseConfiguration {
+    impl Default for PostgresDatabaseFixtureConfiguration {
         fn default() -> Self {
             Self {
-                user: std::env::var("TEST_DATABASE_USER").unwrap_or(String::from("root")),
-                pass: std::env::var("TEST_DATABASE_PASS").unwrap_or(String::from("root")),
-                host: std::env::var("TEST_DATABASE_HOST").unwrap_or(String::from("localhost")),
-                port: std::env::var("TEST_DATABASE_PORT").unwrap_or(String::from("5432")),
-                name: std::env::var("TEST_DATABASE_NAME").unwrap_or(String::from("postgres")),
+                user: std::env::var("DATABASE_USER").unwrap_or(String::from("root")),
+                pass: std::env::var("DATABASE_PASS").unwrap_or(String::from("root")),
+                host: std::env::var("DATABASE_HOST").unwrap_or(String::from("localhost")),
+                port: std::env::var("DATABASE_PORT").unwrap_or(String::from("5432")),
+                name: std::env::var("DATABASE_NAME").unwrap_or(String::from("postgres")),
             }
         }
     }
 
-    impl UnsafePostgresDatabase {
+    impl PostgresDatabaseFixture {
         pub async fn new() -> Self {
             let generated_database_name = Self::generate_name();
 
-            let template_database = std::env::var("TEST_DATABASE_TEMPLATE").unwrap();
+            let template_database = std::env::var("DATABASE_TEMPLATE").unwrap();
 
-            let pool = ConnectionManager::new_pool(PostgresDatabaseConfiguration::default().build_uri(), None)
+            let pool = ConnectionManager::new_pool(PostgresDatabaseFixtureConfiguration::default().build_uri(), None)
                 .await
                 .expect("error creating postgres fixture pool");
 
@@ -80,7 +80,7 @@ pub mod tests {
             .await
             .expect("error trying to terminate template database connections");
 
-            let configuration = PostgresDatabaseConfiguration {
+            let configuration = PostgresDatabaseFixtureConfiguration {
                 name: generated_database_name.clone(),
                 ..Default::default()
             };
@@ -92,6 +92,7 @@ pub mod tests {
             Self { pool, configuration }
         }
 
+        #[allow(dead_code)]
         async fn terminate_template_pid(template_database: &str, pool: &ConnectionPool) {
             sqlx::query(&format!(
                 "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '{template_database}'"
@@ -109,14 +110,15 @@ pub mod tests {
             std::iter::repeat_with(move || {
                 let rng_max = rng.gen_range(0..CHARSET.len());
 
-                CHARSET[rng_max] as char
+                CHARSET[rng_max].clone() as char
             })
             .take(7)
             .collect::<String>()
         }
 
+        #[allow(dead_code)]
         pub async fn dispose(&self) {
-            let configuration = PostgresDatabaseConfiguration::default();
+            let configuration = PostgresDatabaseFixtureConfiguration::default();
 
             let pool = ConnectionManager::new_pool(&configuration.build_uri(), None)
                 .await

@@ -1,5 +1,4 @@
 use axum::async_trait;
-use serde::Serialize;
 use tracing::Instrument;
 
 use crate::contexts::ecommerce::{backoffice, common};
@@ -14,21 +13,11 @@ impl GetProducts {
     }
 }
 
-#[derive(Serialize)]
-pub struct GetProductsOutput {
-    pub items: Vec<backoffice::domain::product::Product>,
-}
-
-impl From<Vec<backoffice::domain::product::Product>> for GetProductsOutput {
-    fn from(value: Vec<backoffice::domain::product::Product>) -> Self {
-        Self { items: value }
-    }
-}
-
 #[async_trait]
 impl common::application::usecase::UseCase for GetProducts {
     type Input = ();
-    type Output = GetProductsOutput;
+    type Output = Vec<backoffice::domain::product::Product>;
+
     type Error = common::domain::Error;
 
     async fn exec(&self, _: Self::Input) -> Result<Self::Output, Self::Error> {
@@ -36,6 +25,5 @@ impl common::application::usecase::UseCase for GetProducts {
             .get()
             .instrument(tracing::info_span!("Invoke ProductRepository.get"))
             .await
-            .map(Self::Output::from)
     }
 }

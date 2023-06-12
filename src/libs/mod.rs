@@ -1,3 +1,4 @@
+pub mod json;
 pub mod pg;
-pub mod problemdet;
+pub mod problem_details;
 pub mod random;
