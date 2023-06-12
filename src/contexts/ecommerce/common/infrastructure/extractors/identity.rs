@@ -48,13 +48,15 @@ where
 
         let Some(header) = header else {
             tracing::error!("not found token");
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token not found in header");
             return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         let Ok(header_as_str) = header.to_str() else {
             tracing::error!("malformed token {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token is malformed");
             return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
@@ -62,7 +64,8 @@ where
 
         if header_parts.len() != 2 {
             tracing::error!("malformed token {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token is malformed");
             return Err(
                 libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response(),
             );
@@ -70,7 +73,8 @@ where
 
         if header_parts.first().copied() != Some("Bearer") {
             tracing::error!("malformed token {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token is malformed");
             return Err(
                 libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response(),
             );
@@ -80,7 +84,8 @@ where
 
         let Some(header_token) = header_parts.get(1).copied() else {
             tracing::error!("impossible to read token {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token is malformed");
             return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
@@ -88,7 +93,8 @@ where
 
         let Ok(decoded_header_token) = jsonwebtoken::decode_header(header_token) else {
             tracing::error!("impossible to decode token {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token can't be decoded");
             return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
@@ -96,17 +102,19 @@ where
 
         let Some(decoded_header_token_kid) = decoded_header_token.kid else {
             tracing::error!("impossible to extract KID {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token kid not present");
             return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         tracing::debug!("decoded_header_token_kid={:?}", decoded_header_token_kid);
 
-        let jwk = JwkWellKnown::new().await;
+        let jwk = JwkWellKnown::get().await;
 
         let Ok(jwks_content) = serde_json::from_str::<jsonwebtoken::jwk::JwkSet>(&jwk.content) else {
             tracing::error!("impossible to extract well-known {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token is malformed");
             return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
@@ -114,7 +122,8 @@ where
 
         let Some(jwk) = jwks_content.find(&decoded_header_token_kid) else {
             tracing::error!("impossible to find KID {:?}", header);
-            let problem_details = libs::problem_details::ProblemDetails::from_401();
+            let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+            problem_details.set_detail("Authorization Token kid not present");
             return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
@@ -126,7 +135,8 @@ where
 
                 let Ok(identity_provider_domain) = std::env::var("OAUTH_DOMAIN") else {
                     tracing::error!("not found identity provider domain");
-                    let problem_details = libs::problem_details::ProblemDetails::from_401();
+                    let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+                    problem_details.set_detail("Host not prepared");
                     return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
                 };
 
@@ -134,7 +144,8 @@ where
 
                 let Ok(identity_provider_audience) = std::env::var("OAUTH_AUDIENCE") else {
                     tracing::error!("not found identity provider audience");
-                    let problem_details = libs::problem_details::ProblemDetails::from_401();
+                    let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+                    problem_details.set_detail("Host not prepared");
                     return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
                 };
 
@@ -150,7 +161,8 @@ where
 
                 let Ok(decoding_key) = jsonwebtoken::DecodingKey::from_rsa_components(&rsa.n, &rsa.e) else {
                     tracing::error!("impossible to decode rsa key {:?}", header);
-                    let problem_details = libs::problem_details::ProblemDetails::from_401();
+                    let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+                    problem_details.set_detail("Impossible to decode RSA");
                     return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
                 };
 
@@ -161,7 +173,8 @@ where
                     }
                     Err(error) => {
                         tracing::error!("impossible to decode token data: {:?}", error);
-                        let problem_details = libs::problem_details::ProblemDetails::from_401();
+                        let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+                        problem_details.set_detail("Impossible to decode Token Data");
                         Err(
                             libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details)
                                 .into_response(),
@@ -171,7 +184,8 @@ where
             }
             _ => {
                 tracing::error!("invalid algorithm {:?}", header);
-                let problem_details = libs::problem_details::ProblemDetails::from_401();
+                let mut problem_details = libs::problem_details::ProblemDetails::from_401();
+                problem_details.set_detail("Invalid algorithm");
                 Err(
                     libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details)
                         .into_response(),
@@ -187,26 +201,25 @@ struct JwkWellKnown {
 
 #[async_trait]
 trait JwkRetriever {
-    async fn new() -> Self;
-    async fn fetch() -> String;
+    async fn get() -> Self;
+    async fn load_content() -> String;
 }
 
 #[async_trait]
 impl JwkRetriever for JwkWellKnown {
-    async fn new() -> Self {
+    async fn get() -> Self {
+        // only fetch new jwk each 12h to prevent DDOS negation service from the identity provider
         if WELL_KNOWN_TTL.get().is_none() {
             return Self {
-                content: Self::fetch().await,
+                content: Self::load_content().await,
             };
         }
 
-        // only fetch new jwk each 12h to prevent DDOS negation service from the identity provider
         let now = chrono::offset::Utc::now();
-
         // the last reading was more than 12 hours ago
         if (*WELL_KNOWN_TTL.get().unwrap_or(&now) + chrono::Duration::hours(12)) < now {
             return Self {
-                content: Self::fetch().await,
+                content: Self::load_content().await,
             };
         }
 
@@ -218,24 +231,23 @@ impl JwkRetriever for JwkWellKnown {
     }
 
     #[cfg(test)]
-    async fn fetch() -> String {
+    async fn load_content() -> String {
         tracing::debug!("generate new jwks from local pem");
-
         let jwks = include_str!("../../../../../../static/oauth2/jwks_from_public_pem.json");
         jwks.to_string()
     }
 
     #[cfg(not(test))]
-    async fn fetch() -> String {
+    async fn load_content() -> String {
         tracing::debug!("generate new jwks from remote well-known");
 
-        let oauth_domain = std::env::var("OAUTH_DOMAIN").expect("OAUTH_DOMAIN");
-
-        if let Ok(response) = reqwest::get(format!("{oauth_domain}/.well-known/jwks.json")).await {
-            if let Ok(text) = response.text().await {
-                if let Ok(_) = WELL_KNOWN.set(text.clone()) {
-                    if let Ok(_) = WELL_KNOWN_TTL.set(chrono::offset::Utc::now()) {
-                        return text;
+        if let Ok(oauth_domain) = std::env::var("OAUTH_DOMAIN") {
+            if let Ok(response) = reqwest::get(format!("{oauth_domain}/.well-known/jwks.json")).await {
+                if let Ok(text) = response.text().await {
+                    if let Ok(_) = WELL_KNOWN.set(text.clone()) {
+                        if let Ok(_) = WELL_KNOWN_TTL.set(chrono::offset::Utc::now()) {
+                            return text;
+                        }
                     }
                 }
             }
