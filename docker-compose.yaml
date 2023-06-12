@@ -2,12 +2,12 @@ services:
   postgres:
     image: postgres:15-alpine
     restart: always
-    env_file: static/environment/.env.postgres
+    env_file: static/env/.env.postgres
     ports:
       - '5432:5432'
     volumes:
       - .:/app:ro
-      - ./ci/init/pg_init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+      - ./tools/scripts/pg_init.sh:/docker-entrypoint-initdb.d/init.sh:ro
     healthcheck:
       test: "pg_isready -q -h postgres"
       interval: 1s
@@ -24,7 +24,7 @@ services:
   postgres_ui:
     image: sosedoff/pgweb
     restart: always
-    env_file: static/environment/.env.postgres
+    env_file: static/env/.env.postgres
     ports:
       - "5433:8081"
     depends_on:
@@ -33,7 +33,7 @@ services:
 
   jaeger:
     image: jaegertracing/all-in-one:latest
-    env_file: static/environment/.env.jaeger
+    env_file: static/env/.env.jaeger
     ports:
       - "6831:6831/udp"
       - "6832:6832/udp"
@@ -50,7 +50,7 @@ services:
     image: swaggerapi/swagger-ui
     ports:
       - "9000:8080"
-    env_file: static/environment/.env.swagger
+    env_file: static/env/.env.swagger
     volumes:
       - ./openapi.yaml:/openapi.yaml:ro
-      - ./static/environment/swagger.init.sh:/docker-entrypoint.d/__init.sh:ro
+      - ./tools/scripts/swagger_init.sh:/docker-entrypoint.d/__init.sh:ro

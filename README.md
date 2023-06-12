@@ -45,7 +45,7 @@ cargo run --release
 docker compose up
 ```
 
-Database **seed** is injected with `ci/init/pg_init.sh`.
+Database **seed** is injected with `tools/scripts/pg_init.sh`.
 
 - Postgres will run on: `:5432`
 - Postgres GUI will run on: `:5433`
@@ -94,7 +94,7 @@ export DATABASE_TEMPLATE=ecommerce_template
 cargo test --locked --all-features --all-targets
 
 # with coverage
-cargo llvm-cov --open
+cargo llvm-cov --open --locked --all-features --all-targets
 ```
 
 > Run `cargo +nightly install cargo-llvm-cov --locked` if **cargo-llvm-cov** is not installed yet in your system

@@ -1,0 +1,118 @@
+name: Continuous Integration Workflow
+on: [ pull_request, push ]
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - lint
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+
+      - name: Generate lockfile
+        if: hashFiles('Cargo.lock') = ''
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Restore cache
+        id: target-cache-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            target
+          key: ${{ runner.os }}-target
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --locked --release
+
+      - name: Save cache
+        id: target-cache-save
+        uses: actions/cache/save@v3
+        with:
+          path: |
+            target
+          key: ${{ steps.target-cache-restore.outputs.cache-primary-key }}
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+
+      - name: Restore cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            target
+          key: ${{ runner.os }}-target
+
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets --all-features -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Seed database
+        run: |
+          apt-get update
+          apt-get install --yes --no-install-recommends postgresql-client
+          
+          sh ./tools/scripts/pg_init.sh
+        env:
+          SOURCE_ROOT: ./src
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+
+      - name: Generate lockfile
+        if: hashFiles('Cargo.lock') = ''
+        uses: actions-rs/cargo@v1
+        with:
+          command: generate-lockfile
+
+      - name: Restore cache
+        uses: actions/cache/restore@v3
+        with:
+          path: |
+            target
+          key: ${{ runner.os }}-target
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+
+      - name: Generate code coverage
+        run: cargo llvm-cov --locked --all-features --all-targets
+        env:
+          DATABASE_TEMPLATE: ecommerce_template
