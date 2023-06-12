@@ -93,6 +93,11 @@ jobs:
           sh ./tools/scripts/pg_init.sh
         env:
           SOURCE_ROOT: ./src
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: postgres
+          PGUSER: root
+          PGPASSWORD: root
 
       - uses: actions-rs/toolchain@v1
         with:
