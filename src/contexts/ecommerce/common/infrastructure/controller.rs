@@ -1,5 +1,5 @@
 #[cfg(test)]
-pub mod tests {
+pub mod fixture {
     use crate::contexts::ecommerce::common;
     use crate::libs;
 
@@ -11,7 +11,7 @@ pub mod tests {
 
     impl HttpContextFixture {
         pub async fn new() -> Self {
-            let database = libs::pg::fixture::PostgresDatabaseFixture::new().await;
+            let database = libs::postgres::fixture::PostgresDatabaseFixture::new().await;
 
             Self {
                 token: common::infrastructure::extractors::fixture::encode_jwt(&[]),
@@ -19,7 +19,6 @@ pub mod tests {
             }
         }
 
-        #[allow(dead_code)]
         pub fn with_permissions(&mut self, permissions: &[&str]) {
             self.token = common::infrastructure::extractors::fixture::encode_jwt(permissions);
         }

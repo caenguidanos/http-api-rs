@@ -49,13 +49,13 @@ where
         let Some(header) = header else {
             tracing::error!("not found token");
             let problem_details = libs::problem_details::ProblemDetails::from_401();
-            return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+            return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         let Ok(header_as_str) = header.to_str() else {
             tracing::error!("malformed token {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
-            return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+            return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         let header_parts: Vec<&str> = header_as_str.split(' ').collect();
@@ -64,7 +64,7 @@ where
             tracing::error!("malformed token {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
             return Err(
-                libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response(),
+                libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response(),
             );
         }
 
@@ -72,7 +72,7 @@ where
             tracing::error!("malformed token {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
             return Err(
-                libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response(),
+                libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response(),
             );
         }
 
@@ -81,7 +81,7 @@ where
         let Some(header_token) = header_parts.get(1).copied() else {
             tracing::error!("impossible to read token {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
-            return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+            return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         tracing::debug!("header_token={:?}", header_token);
@@ -89,7 +89,7 @@ where
         let Ok(decoded_header_token) = jsonwebtoken::decode_header(header_token) else {
             tracing::error!("impossible to decode token {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
-            return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+            return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         tracing::debug!("decoded_header_token={:?}", decoded_header_token);
@@ -97,7 +97,7 @@ where
         let Some(decoded_header_token_kid) = decoded_header_token.kid else {
             tracing::error!("impossible to extract KID {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
-            return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+            return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         tracing::debug!("decoded_header_token_kid={:?}", decoded_header_token_kid);
@@ -107,7 +107,7 @@ where
         let Ok(jwks_content) = serde_json::from_str::<jsonwebtoken::jwk::JwkSet>(&jwk.content) else {
             tracing::error!("impossible to extract well-known {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
-            return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+            return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         tracing::debug!("jwks_content={:?}", jwks_content);
@@ -115,7 +115,7 @@ where
         let Some(jwk) = jwks_content.find(&decoded_header_token_kid) else {
             tracing::error!("impossible to find KID {:?}", header);
             let problem_details = libs::problem_details::ProblemDetails::from_401();
-            return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+            return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
         };
 
         tracing::debug!("jwk={:?}", jwk);
@@ -127,7 +127,7 @@ where
                 let Ok(identity_provider_domain) = std::env::var("OAUTH_DOMAIN") else {
                     tracing::error!("not found identity provider domain");
                     let problem_details = libs::problem_details::ProblemDetails::from_401();
-                    return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+                    return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
                 };
 
                 tracing::debug!("identity_provider_domain={:?}", identity_provider_domain);
@@ -135,7 +135,7 @@ where
                 let Ok(identity_provider_audience) = std::env::var("OAUTH_AUDIENCE") else {
                     tracing::error!("not found identity provider audience");
                     let problem_details = libs::problem_details::ProblemDetails::from_401();
-                    return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+                    return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
                 };
 
                 tracing::debug!("identity_provider_audience={:?}", identity_provider_audience);
@@ -151,7 +151,7 @@ where
                 let Ok(decoding_key) = jsonwebtoken::DecodingKey::from_rsa_components(&rsa.n, &rsa.e) else {
                     tracing::error!("impossible to decode rsa key {:?}", header);
                     let problem_details = libs::problem_details::ProblemDetails::from_401();
-                    return Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
+                    return Err(libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response());
                 };
 
                 return match jsonwebtoken::decode::<IdentityClaims>(header_token, &decoding_key, &rs256_validation) {
@@ -163,7 +163,7 @@ where
                         tracing::error!("impossible to decode token data: {:?}", error);
                         let problem_details = libs::problem_details::ProblemDetails::from_401();
                         Err(
-                            libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details)
+                            libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details)
                                 .into_response(),
                         )
                     }
@@ -172,7 +172,10 @@ where
             _ => {
                 tracing::error!("invalid algorithm {:?}", header);
                 let problem_details = libs::problem_details::ProblemDetails::from_401();
-                Err(libs::json::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details).into_response())
+                Err(
+                    libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details)
+                        .into_response(),
+                )
             }
         };
     }

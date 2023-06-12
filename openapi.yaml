@@ -65,8 +65,8 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: { OAUTH_DOMAIN }/authorize?audience={OAUTH_AUDIENCE}
-          tokenUrl: { OAUTH_DOMAIN }/oauth/token
+          authorizationUrl: __OAUTH_AUTHORIZATION_URL__
+          tokenUrl: __OAUTH_TOKEN_URL__
           scopes:
             ecommerce.product:read: Read products
             ecommerce.product:create: Create products

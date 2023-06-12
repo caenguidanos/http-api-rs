@@ -12,7 +12,7 @@ impl HttpContext {
     pub async fn compose() -> Router {
         let settings = settings::Settings::new();
 
-        let db = libs::pg::ConnectionManager::new_pool(&settings.database_url, None)
+        let db = libs::postgres::ConnectionManager::new_pool(&settings.database_url, None)
             .await
             .expect("could not initialize the database connection pool");
 

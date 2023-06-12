@@ -20,7 +20,7 @@ pub async fn get_products(
         .instrument(tracing::debug_span!("Execute use case", name = "GetProducts"))
         .await?;
 
-    Ok(libs::json::JsonResponse::with_status(StatusCode::OK, output))
+    Ok(libs::encoding::JsonResponse::with_status(StatusCode::OK, output))
 }
 
 impl FromRef<common::infrastructure::DependencyContainer> for Arc<backoffice::application::usecases::GetProducts> {
@@ -50,7 +50,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_no_token_when_request_then_return_401() {
-        let fixture = common::infrastructure::controller::tests::HttpContextFixture::new().await;
+        let fixture = common::infrastructure::controller::fixture::HttpContextFixture::new().await;
 
         let response = router(fixture.services)
             .oneshot(Request::builder().uri(PATH).body(Body::empty()).unwrap())
@@ -62,7 +62,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_no_permissions_when_request_then_return_403() {
-        let fixture = common::infrastructure::controller::tests::HttpContextFixture::new().await;
+        let fixture = common::infrastructure::controller::fixture::HttpContextFixture::new().await;
 
         let response = router(fixture.services)
             .oneshot(
@@ -85,7 +85,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_empty_database_when_request_then_return_200() {
-        let mut fixture = common::infrastructure::controller::tests::HttpContextFixture::new().await;
+        let mut fixture = common::infrastructure::controller::fixture::HttpContextFixture::new().await;
         fixture.with_permissions(&[common::domain::Permissions::EcommerceReadProduct.to_string().as_str()]);
 
         let response = router(fixture.services)
@@ -109,7 +109,7 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn given_products_on_database_when_request_then_return_200() {
-        let mut fixture = common::infrastructure::controller::tests::HttpContextFixture::new().await;
+        let mut fixture = common::infrastructure::controller::fixture::HttpContextFixture::new().await;
         fixture.with_permissions(&[common::domain::Permissions::EcommerceReadProduct.to_string().as_str()]);
 
         let product_1 = backoffice::domain::product::fixture::ProductBuilder::default();

@@ -2,7 +2,6 @@
 
 Template for production ready HTTP servers in Rust.
 
-- **CI**: Dagger
 - **Database**: Postgres
 - **HTTP Server**: Axum
 - **Security**: OAuth2 RBAC
@@ -21,36 +20,13 @@ Template for production ready HTTP servers in Rust.
 - Create `static/environments/.env.postgres` from `static/environments/.env.postgres.example` and fulfill values.
 - Create `static/environments/.env.swagger` from `static/environments/.env.swagger.example` and fulfill values.
 
-| Environment variable | Description                                                    | Example                  | Documentation                                                                 |
-|----------------------|----------------------------------------------------------------|--------------------------|-------------------------------------------------------------------------------|
-| `OAUTH_CLIENT_ID`    | The client_id of the application from your **oauth2** provider | sdf82yufuysdfusdy28      | [Auth0](https://auth0.com/docs/get-started/applications/application-settings) |
-| `OAUTH_DOMAIN`       | The domain of your **oauth2** provider                         | https://auth.example.com | [Auth0](https://auth0.com/docs/customize/custom-domains)                      |
-| `OAUTH_AUDIENCE`     | Your API identifier as **oauth2** resource                     | https://api.example.com  | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
-
-#### Replace variables on OpenApi
-
-```yaml
-components:
-  securitySchemes:
-    Identity:
-      type: oauth2
-      flows:
-        authorizationCode:
-          authorizationUrl: %OAUTH_DOMAIN%/authorize?audience=%OAUTH_AUDIENCE%
-          tokenUrl: %OAUTH_DOMAIN%/oauth/token
-          scopes: # permissions
-            ecommerce.product:read: Read products
-            ecommerce.product:create: Create products
-            ecommerce.product:delete: Delete products
-```
-
-### Install
-
-Node dependencies are required for **Dagger**.
-
-```shell
-npm install
-```
+| Environment variable      | Description                                                   | Example                                            | Documentation                                                                 |
+|---------------------------|---------------------------------------------------------------|----------------------------------------------------|-------------------------------------------------------------------------------|
+| `OAUTH_CLIENT_ID`         | The client_id of the application from your oauth provider     | sdf82yufuysdfusdy28                                | [Auth0](https://auth0.com/docs/get-started/applications/application-settings) |
+| `OAUTH_DOMAIN`            | Your domain from your oauth provider                          | https://auth.example.com                           | [Auth0](https://auth0.com/docs/customize/custom-domains)                      |
+| `OAUTH_AUDIENCE`          | Your API identifier as oauth resource                         | https://api.example.com                            | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
+| `OAUTH_AUTHORIZATION_URL` | OAuth Authorization URL of your application with the audience | `OAUTH_DOMAIN`/authorize?audience=`OAUTH_AUDIENCE` | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
+| `OAUTH_TOKEN_URL`         | OAuth Token URL of your application with the audience         | `OAUTH_DOMAIN`/oauth/token                         | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
 
 ### Run
 
@@ -75,34 +51,32 @@ Database **seed** is injected with `ci/init/pg_init.sh`.
 - Jaeger will run on: `:16686`
 - Swagger will run on: `:9000`
 
-### CI Test
-
-It's required [Node](https://nodejs.org/en) installed on host for executing the pipeline.
-
-```shell
-export DATABASE_TEMPLATE=ecommerce_template
-
-make test
-```
-
 ### Build
 
 ```shell
 cargo build --release
 ```
 
-### Manual test
+### Local Test
 
-#### Start DB
+#### Start infrastructure
 
 ```shell
-docker compose up -V --force-recreate postgres
+docker compose up
 ```
 
-#### Run tests
+#### Execute Rust tests with Postgres Template Database
+
+More info [here](https://www.postgresql.org/docs/current/manage-ag-templatedbs.html).
 
 ```shell
 export DATABASE_TEMPLATE=ecommerce_template
 
 cargo test --release
 ```
+
+### Screenshots
+
+![swagger](./static/img/swagger.png)
+![jaeger](./static/img/jaeger.png)
+![pgweb](./static/img/pgweb.png)

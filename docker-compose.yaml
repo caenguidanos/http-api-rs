@@ -46,3 +46,4 @@ services:
     env_file: static/environment/.env.swagger
     volumes:
       - ./openapi.yaml:/openapi.yaml:ro
+      - ./static/environment/swagger.init.sh:/docker-entrypoint.d/__init.sh:ro

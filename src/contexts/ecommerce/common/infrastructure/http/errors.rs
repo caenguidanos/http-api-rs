@@ -28,7 +28,7 @@ impl IntoResponse for common::domain::Error {
             }
         }
 
-        libs::json::JsonResponse::with_status(
+        libs::encoding::JsonResponse::with_status(
             StatusCode::from_u16(problem_details.status).unwrap_or(StatusCode::IM_A_TEAPOT),
             problem_details.clone(),
         )

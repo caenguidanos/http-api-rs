@@ -12,7 +12,7 @@ pub struct DependencyContainer {
 }
 
 impl DependencyContainer {
-    pub fn new(db: libs::pg::ConnectionPool) -> Self {
+    pub fn new(db: libs::postgres::ConnectionPool) -> Self {
         let product_repository = Arc::new(backoffice::infrastructure::PostgresProductRepository::new(db));
 
         Self {

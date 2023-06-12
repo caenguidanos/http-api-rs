@@ -4,11 +4,11 @@ use crate::contexts::ecommerce::{backoffice, common};
 use crate::libs;
 
 pub struct PostgresProductRepository {
-    db: libs::pg::ConnectionPool,
+    db: libs::postgres::ConnectionPool,
 }
 
 impl PostgresProductRepository {
-    pub fn new(db: libs::pg::ConnectionPool) -> Self {
+    pub fn new(db: libs::postgres::ConnectionPool) -> Self {
         Self { db }
     }
 }
@@ -66,7 +66,7 @@ impl backoffice::domain::product::ProductRepository for PostgresProductRepositor
             .map_err(|error| {
                 if let Some(error) = error.as_database_error() {
                     if let Some(code) = error.code() {
-                        if code == libs::pg::errcodes::Codes::UniqueViolation.to_string() {
+                        if code == libs::postgres::errcodes::Codes::UniqueViolation.to_string() {
                             return common::domain::Error::ProductAlreadyExists;
                         }
                     }
@@ -89,7 +89,7 @@ mod tests {
     use super::*;
 
     async fn compose_repository_fixture() -> backoffice::domain::product::DynProductRepository<common::domain::Error> {
-        let database = libs::pg::fixture::PostgresDatabaseFixture::new().await;
+        let database = libs::postgres::fixture::PostgresDatabaseFixture::new().await;
 
         Arc::new(PostgresProductRepository::new(database.pool))
     }
