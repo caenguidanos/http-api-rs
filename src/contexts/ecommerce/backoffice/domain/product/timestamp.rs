@@ -4,7 +4,7 @@ use std::fmt::{Display, Formatter};
 pub struct ProductTimeStamp(chrono::DateTime<chrono::offset::Utc>);
 
 impl ProductTimeStamp {
-    pub fn to_primitive(&self) -> chrono::DateTime<chrono::offset::Utc> {
+    pub fn to_primitive(self) -> chrono::DateTime<chrono::offset::Utc> {
         let _e = tracing::debug_span!("Transform ProductTimeStamp to primitive").entered();
 
         self.0

@@ -24,7 +24,7 @@ impl HttpServer {
             .layer(http_trace_layer)
             .fallback(Self::handle_fallback);
 
-        let addr = std::net::SocketAddr::from(([0, 0, 0, 0], settings.port.clone()));
+        let addr = std::net::SocketAddr::from(([0, 0, 0, 0], settings.port));
         tracing::debug!("listening on {}", addr);
 
         axum::Server::bind(&addr).serve(app.into_make_service()).await.unwrap();

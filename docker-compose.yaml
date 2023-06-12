@@ -14,6 +14,13 @@ services:
       timeout: 1s
       retries: 5
 
+  redis:
+    image: redis:7.0
+    restart: always
+    command: redis-server --loglevel warning
+    ports:
+      - '6379:6379'
+
   postgres_ui:
     image: sosedoff/pgweb
     restart: always

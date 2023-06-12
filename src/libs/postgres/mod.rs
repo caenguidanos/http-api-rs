@@ -107,10 +107,10 @@ pub mod fixture {
 
             let mut rng = rand::thread_rng();
 
-            std::iter::repeat_with(move || {
+            std::iter::repeat_with(|| {
                 let rng_max = rng.gen_range(0..CHARSET.len());
 
-                CHARSET[rng_max].clone() as char
+                CHARSET[rng_max] as char
             })
             .take(7)
             .collect::<String>()

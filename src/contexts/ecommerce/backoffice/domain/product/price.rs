@@ -21,7 +21,7 @@ impl ProductPrice {
         Err(common::domain::Error::InvalidProductPrice).inspect_err(|err| tracing::error!("{err}"))
     }
 
-    pub fn to_primitive(&self) -> i32 {
+    pub fn to_primitive(self) -> i32 {
         let _e = tracing::debug_span!("Transform ProductPrice to primitive").entered();
 
         self.0

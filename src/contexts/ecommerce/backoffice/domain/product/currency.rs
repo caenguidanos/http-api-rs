@@ -4,8 +4,8 @@ use crate::contexts::ecommerce::common;
 
 #[derive(Copy, Clone, PartialEq)]
 pub enum ProductCurrency {
-    EUR,
-    USD,
+    Eur,
+    Usd,
 }
 
 impl Display for ProductCurrency {
@@ -13,8 +13,8 @@ impl Display for ProductCurrency {
         let _e = tracing::debug_span!("Display ProductCurrency").entered();
 
         match self {
-            Self::EUR => write!(f, "EUR"),
-            Self::USD => write!(f, "USD"),
+            Self::Eur => write!(f, "EUR"),
+            Self::Usd => write!(f, "USD"),
         }
     }
 }
@@ -26,8 +26,8 @@ impl TryFrom<&str> for ProductCurrency {
         let _e = tracing::debug_span!("Try cast ProductCurrency from &str").entered();
 
         match value {
-            "EUR" => Ok(ProductCurrency::EUR),
-            "USD" => Ok(ProductCurrency::USD),
+            "EUR" => Ok(ProductCurrency::Eur),
+            "USD" => Ok(ProductCurrency::Usd),
             _ => Err(common::domain::Error::InvalidProductCurrency).inspect_err(|err| tracing::error!("{err}")),
         }
     }

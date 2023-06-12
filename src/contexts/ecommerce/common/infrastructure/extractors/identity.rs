@@ -244,10 +244,8 @@ impl JwkRetriever for JwkWellKnown {
         if let Ok(oauth_domain) = std::env::var("OAUTH_DOMAIN") {
             if let Ok(response) = reqwest::get(format!("{oauth_domain}/.well-known/jwks.json")).await {
                 if let Ok(text) = response.text().await {
-                    if let Ok(_) = WELL_KNOWN.set(text.clone()) {
-                        if let Ok(_) = WELL_KNOWN_TTL.set(chrono::offset::Utc::now()) {
-                            return text;
-                        }
+                    if WELL_KNOWN.set(text.clone()).is_ok() && WELL_KNOWN_TTL.set(chrono::offset::Utc::now()).is_ok() {
+                        return text;
                     }
                 }
             }

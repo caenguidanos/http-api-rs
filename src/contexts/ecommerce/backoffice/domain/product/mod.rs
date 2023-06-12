@@ -80,7 +80,7 @@ pub mod fixture {
                 id: ProductId::default(),
                 name: ProductName::try_from(random_name).unwrap(),
                 price: ProductPrice::try_from(random_price).unwrap(),
-                currency: ProductCurrency::EUR,
+                currency: ProductCurrency::Eur,
                 __updated_at__: now,
                 __created_at__: now,
             }

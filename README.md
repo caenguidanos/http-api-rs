@@ -51,6 +51,23 @@ Database **seed** is injected with `ci/init/pg_init.sh`.
 - Jaeger will run on: `:16686`
 - Swagger will run on: `:9000`
 
+### Lint
+
+```shell
+# warnings as errors
+cargo clippy --all-targets --all-features -- -D warnings
+```
+
+> Run `rustup component add clippy` if **clippy** is not installed yet in your system
+
+### Format
+
+```shell
+cargo fmt --all -- --check -v
+```
+
+> Run `rustup component add rustfmt` if **clippy** is not installed yet in your system
+
 ### Build
 
 ```shell

@@ -14,7 +14,7 @@ impl ProductId {
             .map_err(|_| common::domain::Error::InvalidProductId)
     }
 
-    pub fn to_primitive(&self) -> uuid::Uuid {
+    pub fn to_primitive(self) -> uuid::Uuid {
         let _e = tracing::debug_span!("Transform ProductId to primitive").entered();
 
         self.0

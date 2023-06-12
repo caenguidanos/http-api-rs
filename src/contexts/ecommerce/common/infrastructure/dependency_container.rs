@@ -21,9 +21,7 @@ impl DependencyContainer {
             get_products_usecase: Arc::new(backoffice::application::usecases::GetProducts::new(
                 product_repository.clone(),
             )),
-            save_product_usecase: Arc::new(backoffice::application::usecases::SaveProduct::new(
-                product_repository.clone(),
-            )),
+            save_product_usecase: Arc::new(backoffice::application::usecases::SaveProduct::new(product_repository)),
         }
     }
 }
