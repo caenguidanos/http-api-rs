@@ -15,7 +15,7 @@ jobs:
           toolchain: nightly
 
       - name: Generate lockfile
-        if: hashFiles('Cargo.lock') = ''
+        if: hashFiles('Cargo.lock') == ''
         uses: actions-rs/cargo@v1
         with:
           command: generate-lockfile
@@ -97,7 +97,7 @@ jobs:
           toolchain: nightly
 
       - name: Generate lockfile
-        if: hashFiles('Cargo.lock') = ''
+        if: hashFiles('Cargo.lock') == ''
         uses: actions-rs/cargo@v1
         with:
           command: generate-lockfile
