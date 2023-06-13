@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: rust-http-api-template
+    runtime: rust
+    region: frankfurt
+    plan: starter
+    healthCheckPath: /healthz
+    buildCommand: cargo build --release
+    startCommand: cargo run --release
+    envVars:
+      - key: RUST_LOG
+        value: error
+      - key: OAUTH_DOMAIN
+        generateValue: false
+      - key: OAUTH_AUDIENCE
+        generateValue: false
+      - key: CORS_ORIGIN
+        generateValue: false
+      - key: TELEMETRY_ENABLED
+        value: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postgres
+          property: connectionString
+
+databases:
+  - name: postgres
+    region: frankfurt
+    plan: starter
+    user: clapton
+    postgresMajorVersion: 15
+    ipAllowList: [ ]

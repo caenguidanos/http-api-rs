@@ -2,6 +2,8 @@
 
 Template for production ready HTTP servers in Rust.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
 - **HTTP Server**: Axum
 - **Database**: Postgres
 - **Identity**: OAuth2 - RBAC

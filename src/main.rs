@@ -17,7 +17,9 @@ async fn main() {
 
     let settings = settings::Settings::new();
 
-    init_telemetry();
+    if settings.telemetry_enabled {
+        init_telemetry();
+    }
 
     std::panic::set_hook(Box::new(tracing_panic::panic_hook));
 
