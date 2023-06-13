@@ -11,11 +11,11 @@ services:
       - key: RUST_LOG
         value: error
       - key: OAUTH_DOMAIN
-        generateValue: false
+        sync: false
       - key: OAUTH_AUDIENCE
-        generateValue: false
+        sync: false
       - key: CORS_ORIGIN
-        generateValue: false
+        sync: false
       - key: TELEMETRY_ENABLED
         value: false
       - key: DATABASE_URL
