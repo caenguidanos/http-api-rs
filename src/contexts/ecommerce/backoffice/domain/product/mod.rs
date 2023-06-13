@@ -42,7 +42,7 @@ impl Product {
     }
 
     pub fn validate(&self) -> Result<(), common::domain::Error> {
-        let _e = tracing::debug_span!("Validate ProductPrice").entered();
+        let _e = tracing::debug_span!("Validate Product").entered();
 
         if self.__created_at__ > self.__updated_at__ {
             return Err(common::domain::Error::InvalidProductTimeStampRelation)
