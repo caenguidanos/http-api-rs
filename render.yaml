@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: rust-http-api-template
+    name: api
     runtime: rust
     region: frankfurt
     plan: starter
