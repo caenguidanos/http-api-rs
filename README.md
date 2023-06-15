@@ -9,7 +9,7 @@ Template for production ready HTTP servers in Rust.
 - **Identity**: OAuth2 - RBAC
 - **Observability**: OpenTelemetry/Jaeger
 - **Documentation**: Openapi 3.0 / SwaggerUI
-- **CI**: Github Actions
+- **CI**: GitHub Actions
 
 ### Required dependencies
 
@@ -29,7 +29,7 @@ Template for production ready HTTP servers in Rust.
 | `OAUTH_DOMAIN`            | Your domain from your oauth provider                          | https://auth.example.com                           | [Auth0](https://auth0.com/docs/customize/custom-domains)                      |
 | `OAUTH_AUDIENCE`          | Your API identifier as oauth resource                         | https://api.example.com                            | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
 | `OAUTH_AUTHORIZATION_URL` | OAuth Authorization URL of your application with the audience | `OAUTH_DOMAIN`/authorize?audience=`OAUTH_AUDIENCE` | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
-| `OAUTH_TOKEN_URL`         | OAuth Token URL of your application with the audience         | `OAUTH_DOMAIN`/oauth/token                         | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
+| `OAUTH_TOKEN_URL`         | OAuth Token URL of your application                           | `OAUTH_DOMAIN`/oauth/token                         | [Auth0](https://auth0.com/docs/get-started/apis/api-settings)                 |
 
 ### Run
 
