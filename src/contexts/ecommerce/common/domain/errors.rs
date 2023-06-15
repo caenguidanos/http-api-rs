@@ -1,6 +1,6 @@
 use derive_more::Display;
 
-#[derive(Debug, Display)]
+#[derive(Clone, Debug, Display)]
 pub enum Error {
     #[display(fmt = "db error: {}", _0)]
     Persistence(String),

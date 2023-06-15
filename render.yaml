@@ -18,7 +18,7 @@ services:
         sync: false
       - key: TELEMETRY_ENABLED
         value: false
-      - key: DATABASE_URL
+      - key: ECOMMERCE__DATABASE_URL
         fromDatabase:
           name: postgres
           property: connectionString

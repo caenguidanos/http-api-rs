@@ -19,10 +19,10 @@ impl backoffice::domain::product::ProductRepository for PostgresProductRepositor
 
     async fn get(&self) -> Result<Vec<backoffice::domain::product::Product>, Self::Error> {
         static SQL: &str = r#"
-            SELECT *
-            FROM product
-            LIMIT 50
-        "#;
+                SELECT *
+                FROM product
+                LIMIT 50
+            "#;
 
         sqlx::query_as(SQL)
             .fetch_all(&self.db)

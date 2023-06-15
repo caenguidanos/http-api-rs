@@ -11,11 +11,13 @@ axum = { version = "0.6.18", features = ["tower-log", "headers"] }
 chrono = { version = "0.4.24", features = ["serde"] }
 derive_more = { version = "0.99.17", features = ["display"] }
 dotenv = "0.15.0"
+futures = "0.3.28"
 hyper = { version = "0.14.26", features = ["full"] }
 jsonwebtoken = "8.3.0"
 mime = "0.3.17"
 opentelemetry = { version = "0.19.0", features = ["rt-tokio"] }
 opentelemetry-otlp = "0.12.0"
+opentelemetry-semantic-conventions = "0.11.0"
 rand = "0.8.5"
 reqwest = "0.11.18"
 serde = { version = "1.0.160", features = ["derive"] }

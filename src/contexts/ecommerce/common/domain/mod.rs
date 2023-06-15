@@ -1,5 +1,5 @@
-pub use error::*;
+pub use errors::*;
 pub use permissions::*;
 
-mod error;
+mod errors;
 mod permissions;

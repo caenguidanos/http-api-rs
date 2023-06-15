@@ -6,7 +6,7 @@ use crate::contexts::ecommerce::{backoffice, common};
 pub struct HttpController;
 
 impl HttpController {
-    pub fn compose(services: common::infrastructure::DependencyContainer) -> Router {
+    pub fn build(services: common::infrastructure::DependencyContainer) -> Router {
         Router::new()
             .nest(
                 "/product",

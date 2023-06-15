@@ -6,18 +6,25 @@ mod backoffice;
 mod common;
 mod settings;
 
-pub struct HttpContext;
+pub struct HttpContext {
+    pub router: Router,
+}
 
 impl HttpContext {
-    pub async fn compose() -> Router {
+    pub async fn new() -> Self {
         let settings = settings::Settings::new();
 
         let db = libs::postgres::ConnectionManager::new_pool(&settings.database_url, None)
             .await
-            .expect("could not initialize the database connection pool");
+            .expect("could not initialize postgres connection pool");
 
         let services = common::infrastructure::DependencyContainer::new(db);
 
-        Router::new().merge(backoffice::infrastructure::HttpController::compose(services))
+        Self {
+            router: Router::new().nest(
+                "/ecommerce",
+                backoffice::infrastructure::HttpController::build(services),
+            ),
+        }
     }
 }
