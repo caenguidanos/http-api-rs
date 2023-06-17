@@ -173,8 +173,10 @@ where
                     }
                     Err(error) => {
                         tracing::error!("impossible to decode token data: {:?}", error);
+
                         let mut problem_details = libs::problem_details::ProblemDetails::from_401();
-                        problem_details.set_detail("Impossible to decode Token Data");
+                        problem_details.set_detail(format!("Impossible to decode token data: {}", error));
+
                         Err(
                             libs::encoding::JsonResponse::with_status(StatusCode::UNAUTHORIZED, problem_details)
                                 .into_response(),
@@ -233,7 +235,7 @@ impl JwkRetriever for JwkWellKnown {
     #[cfg(test)]
     async fn load_content() -> String {
         tracing::debug!("generate new jwks from local pem");
-        let jwks = include_str!("../../../../../../static/oauth2/jwks_from_public_pem.json");
+        let jwks = include_str!("../../../../../../config/oauth/jwks_from_public_pem.json");
         jwks.to_string()
     }
 
@@ -305,7 +307,7 @@ pub mod fixture {
         let token = encode(
             &header,
             &claims,
-            &EncodingKey::from_rsa_pem(include_bytes!("../../../../../../static/oauth2/test_private.pem")).unwrap(),
+            &EncodingKey::from_rsa_pem(include_bytes!("../../../../../../config/oauth/test_private.pem")).unwrap(),
         )
         .unwrap();
 

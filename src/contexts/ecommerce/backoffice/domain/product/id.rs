@@ -14,10 +14,16 @@ impl ProductId {
             .map_err(|_| common::domain::Error::InvalidProductId)
     }
 
-    pub fn to_primitive(self) -> uuid::Uuid {
-        let _e = tracing::debug_span!("Transform ProductId to primitive").entered();
+    pub fn to_uuid(self) -> uuid::Uuid {
+        let _e = tracing::debug_span!("Transform ProductId to uuid").entered();
 
         self.0
+    }
+
+    pub fn to_primitive(self) -> String {
+        let _e = tracing::debug_span!("Transform ProductId to primitive").entered();
+
+        self.0.to_string()
     }
 }
 

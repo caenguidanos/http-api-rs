@@ -8,6 +8,14 @@ pub enum ProductCurrency {
     Usd,
 }
 
+impl ProductCurrency {
+    pub fn to_primitive(self) -> String {
+        let _e = tracing::debug_span!("Transform ProductCurrency to primitive").entered();
+
+        self.to_string()
+    }
+}
+
 impl Display for ProductCurrency {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         let _e = tracing::debug_span!("Display ProductCurrency").entered();

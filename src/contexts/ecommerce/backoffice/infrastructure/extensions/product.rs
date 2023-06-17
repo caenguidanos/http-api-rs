@@ -14,12 +14,12 @@ impl Serialize for backoffice::domain::product::Product {
 
         let mut state = serializer.serialize_struct("Product", 6)?;
 
-        state.serialize_field("id", &self.id.to_string())?;
-        state.serialize_field("name", &self.name.to_string())?;
+        state.serialize_field("id", &self.id.to_primitive())?;
+        state.serialize_field("name", &self.name.to_primitive())?;
         state.serialize_field("price", &self.price.to_primitive())?;
-        state.serialize_field("currency", &self.currency.to_string())?;
-        state.serialize_field("__updated_at__", &self.__updated_at__.to_string())?;
-        state.serialize_field("__created_at__", &self.__created_at__.to_string())?;
+        state.serialize_field("currency", &self.currency.to_primitive())?;
+        state.serialize_field("__updated_at__", &self.__updated_at__.to_primitive())?;
+        state.serialize_field("__created_at__", &self.__created_at__.to_primitive())?;
 
         state.end()
     }

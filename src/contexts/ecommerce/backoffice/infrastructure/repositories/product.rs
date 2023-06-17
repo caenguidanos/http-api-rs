@@ -42,7 +42,7 @@ impl backoffice::domain::product::ProductRepository for PostgresProductRepositor
         "#;
 
         sqlx::query_as(SQL)
-            .bind(id.to_primitive())
+            .bind(id.to_uuid())
             .fetch_optional(&self.db)
             .await
             .inspect_err(|err| tracing::error!("{err}"))
@@ -56,10 +56,10 @@ impl backoffice::domain::product::ProductRepository for PostgresProductRepositor
         "#;
 
         sqlx::query(SQL)
-            .bind(product.id.to_primitive())
+            .bind(product.id.to_uuid())
             .bind(product.name.to_primitive())
             .bind(product.price.to_primitive())
-            .bind(product.currency.to_string())
+            .bind(product.currency.to_primitive())
             .execute(&self.db)
             .await
             .inspect_err(|err| tracing::error!("{err}"))

@@ -1,4 +1,7 @@
+use async_graphql::{EmptyMutation, EmptySubscription, Schema};
+use axum::routing::get;
 use axum::Router;
+use std::sync::Arc;
 
 use crate::libs;
 
@@ -20,10 +23,27 @@ impl HttpContext {
 
         let services = common::infrastructure::DependencyContainer::new(db);
 
+        let graphql_schema = Schema::build(
+            common::infrastructure::graphql::EcommerceQueryRoot::default(),
+            EmptyMutation,
+            EmptySubscription,
+        )
+        .data(services.clone())
+        .finish();
+
         Self {
             router: Router::new().nest(
                 "/ecommerce",
-                backoffice::infrastructure::HttpController::build(services),
+                Router::new()
+                    .route(
+                        "/graphql",
+                        get(common::infrastructure::graphql::playground).post(common::infrastructure::graphql::handler),
+                    )
+                    .with_state(Arc::new(graphql_schema))
+                    .nest(
+                        "/backoffice",
+                        backoffice::infrastructure::HttpController::build(services),
+                    ),
             ),
         }
     }

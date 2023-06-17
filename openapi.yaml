@@ -13,7 +13,7 @@ paths:
         '200':
           description: OK
 
-  /ecommerce/product:
+  /ecommerce/backoffice/product:
     get:
       summary: Returns a list of products.
       security:

@@ -5,6 +5,7 @@ Template for production ready HTTP servers in Rust.
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
 
 - **HTTP Server**: Axum
+- **GraphQL Server**: Async-Graphql
 - **Database**: Postgres
 - **Identity**: OAuth2 - RBAC
 - **Observability**: OpenTelemetry/Jaeger
@@ -18,10 +19,11 @@ Template for production ready HTTP servers in Rust.
 
 ### Environment
 
-- Create `.env` from `.env.example` and fulfill values.
-- Create `static/env/.env.jaeger` from `static/env/.env.jaeger.example`.
-- Create `static/env/.env.postgres` from `static/env/.env.postgres.example`.
-- Create `static/env/.env.swagger` from `static/env/.env.swagger.example`.
+Create and fulfill environment files from `config/env/*`. For example:
+
+```shell
+cp config/env/.env.example config/env/.env
+```
 
 | Environment variable      | Description                                                   | Example                                            | Documentation                                                                 |
 |---------------------------|---------------------------------------------------------------|----------------------------------------------------|-------------------------------------------------------------------------------|
@@ -40,6 +42,15 @@ cargo run --release
 ```
 
 - Axum HTTP Server will run on: `:8080`
+-
+
+#### Start server with Hot Reload
+
+```shell
+cargo install cargo-watch
+
+cargo watch -w src -x run
+```
 
 #### Start infrastructure
 
@@ -103,17 +114,21 @@ cargo llvm-cov --open
 
 #### Swagger UI
 
-![swagger](./static/img/swagger.png)
+![swagger](./public/img/swagger.png)
 
 #### Jaeger trace
 
-![jaeger](./static/img/jaeger.png)
+![jaeger](./public/img/jaeger.png)
+
+#### GraphQL
+
+![swagger](./public/img/gql.png)
 
 #### Postgres GUI
 
-![pgweb](./static/img/pgweb.png)
+![pgweb](./public/img/pgweb.png)
 
 #### llvm-cov
 
-![cov](./static/img/cov.png)
-![cov_2](./static/img/cov_2.png)
+![cov](./public/img/cov.png)
+![cov_2](./public/img/cov_2.png)

@@ -1,3 +1,5 @@
+use axum::http::Request;
+use hyper::Body;
 use opentelemetry::sdk::propagation::TraceContextPropagator;
 use opentelemetry::sdk::trace;
 use opentelemetry::sdk::trace::{RandomIdGenerator, Sampler};
@@ -6,7 +8,7 @@ use opentelemetry_semantic_conventions::resource;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
 
-pub fn init_service(service_name: &'static str) {
+pub fn setup_tracing(service_name: &'static str) {
     let service_name_resource = Resource::new(vec![opentelemetry::KeyValue::new(resource::SERVICE_NAME, service_name)]);
 
     let tracer = opentelemetry_otlp::new_pipeline()
@@ -30,4 +32,18 @@ pub fn init_service(service_name: &'static str) {
         .with(telemetry)
         .with(tracing_subscriber::fmt::layer().pretty())
         .init();
+}
+
+pub fn setup_http_root_span(request: &Request<Body>) -> tracing::Span {
+    let otel_name = format!("{} {}", request.method(), request.uri());
+
+    tracing::span!(
+        tracing::Level::INFO,
+        "request",
+        http.method = %request.method(),
+        http.uri = %request.uri(),
+        http.version = ?request.version(),
+        http.request.headers = ?request.headers(),
+        otel.name = %otel_name,
+    )
 }

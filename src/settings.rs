@@ -1,14 +1,14 @@
 use axum::http::HeaderValue;
 
+#[derive(Clone)]
 pub struct Settings {
-    pub port: u16,
-    pub cors_origins: Vec<HeaderValue>,
+    pub cors_origin: Vec<HeaderValue>,
     pub telemetry_enabled: bool,
 }
 
 impl Settings {
     pub fn new() -> Self {
-        let cors_origins: Vec<HeaderValue> = std::env::var("CORS_ORIGIN")
+        let cors_origin: Vec<HeaderValue> = std::env::var("CORS_ORIGIN")
             .expect("CORS_ORIGIN")
             .split(',')
             .map(|origin| origin.parse::<HeaderValue>().expect("Valid CORS origin value"))
@@ -20,8 +20,7 @@ impl Settings {
             .unwrap_or(false);
 
         Self {
-            port: 8080,
-            cors_origins,
+            cors_origin,
             telemetry_enabled,
         }
     }

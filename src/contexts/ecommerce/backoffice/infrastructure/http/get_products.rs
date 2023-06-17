@@ -9,6 +9,7 @@ use crate::contexts::ecommerce::common::application::usecase::UseCase;
 use crate::contexts::ecommerce::{backoffice, common};
 use crate::libs;
 
+#[axum::debug_handler]
 pub async fn get_products(
     identity_claims: common::infrastructure::IdentityClaims,
     State(usecase): State<Arc<backoffice::application::usecases::GetProducts>>,

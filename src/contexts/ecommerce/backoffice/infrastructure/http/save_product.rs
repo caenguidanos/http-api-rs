@@ -9,6 +9,7 @@ use tracing::Instrument;
 use crate::contexts::ecommerce::common::application::usecase::UseCase;
 use crate::contexts::ecommerce::{backoffice, common};
 
+#[axum::debug_handler]
 pub async fn save_product(
     identity_claims: common::infrastructure::IdentityClaims,
     State(usecase): State<Arc<backoffice::application::usecases::SaveProduct>>,
