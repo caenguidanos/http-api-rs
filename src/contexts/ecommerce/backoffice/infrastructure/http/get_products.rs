@@ -14,7 +14,7 @@ pub async fn get_products(
     identity_claims: common::infrastructure::IdentityClaims,
     State(usecase): State<Arc<backoffice::application::usecases::GetProducts>>,
 ) -> Result<impl IntoResponse, common::domain::Error> {
-    identity_claims.check_permission(common::domain::Permissions::EcommerceReadProduct)?;
+    identity_claims.check_permission(common::domain::Permissions::EcommerceBackofficeProductRead)?;
 
     let output = usecase
         .exec(())
@@ -87,7 +87,9 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn given_empty_database_when_request_then_return_200() {
         let mut fixture = common::infrastructure::controller::fixture::HttpContextFixture::new().await;
-        fixture.with_permissions(&[common::domain::Permissions::EcommerceReadProduct.to_string().as_str()]);
+        fixture.with_permissions(&[common::domain::Permissions::EcommerceBackofficeProductRead
+            .to_string()
+            .as_str()]);
 
         let response = router(fixture.services)
             .oneshot(
@@ -111,7 +113,9 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn given_products_on_database_when_request_then_return_200() {
         let mut fixture = common::infrastructure::controller::fixture::HttpContextFixture::new().await;
-        fixture.with_permissions(&[common::domain::Permissions::EcommerceReadProduct.to_string().as_str()]);
+        fixture.with_permissions(&[common::domain::Permissions::EcommerceBackofficeProductRead
+            .to_string()
+            .as_str()]);
 
         let product_1 = backoffice::domain::product::fixture::ProductBuilder::default();
         product_1.save(&fixture.services.product_repository).await;

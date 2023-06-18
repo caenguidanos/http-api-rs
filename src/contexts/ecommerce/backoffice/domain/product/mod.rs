@@ -19,8 +19,8 @@ pub struct Product {
     pub name: ProductName,
     pub price: ProductPrice,
     pub currency: ProductCurrency,
-    pub __created_at__: ProductTimeStamp,
-    pub __updated_at__: ProductTimeStamp,
+    pub created_at: ProductTimeStamp,
+    pub updated_at: ProductTimeStamp,
 }
 
 impl Product {
@@ -32,8 +32,8 @@ impl Product {
             name: ProductName::try_from(name)?,
             price: ProductPrice::try_from(price)?,
             currency: ProductCurrency::try_from(currency)?,
-            __updated_at__: now,
-            __created_at__: now,
+            updated_at: now,
+            created_at: now,
         };
 
         product.validate()?;
@@ -44,7 +44,7 @@ impl Product {
     pub fn validate(&self) -> Result<(), common::domain::Error> {
         let _e = tracing::debug_span!("Validate Product").entered();
 
-        if self.__created_at__ > self.__updated_at__ {
+        if self.created_at > self.updated_at {
             return Err(common::domain::Error::InvalidProductTimeStampRelation)
                 .inspect_err(|err| tracing::error!("{err}"));
         }
@@ -65,8 +65,8 @@ pub mod fixture {
         pub name: ProductName,
         pub price: ProductPrice,
         pub currency: ProductCurrency,
-        pub __created_at__: ProductTimeStamp,
-        pub __updated_at__: ProductTimeStamp,
+        pub created_at: ProductTimeStamp,
+        pub updated_at: ProductTimeStamp,
     }
 
     impl Default for ProductBuilder {
@@ -81,8 +81,8 @@ pub mod fixture {
                 name: ProductName::try_from(random_name).unwrap(),
                 price: ProductPrice::try_from(random_price).unwrap(),
                 currency: ProductCurrency::Eur,
-                __updated_at__: now,
-                __created_at__: now,
+                updated_at: now,
+                created_at: now,
             }
         }
     }
@@ -94,8 +94,8 @@ pub mod fixture {
                 name: self.name.clone(),
                 price: self.price,
                 currency: self.currency,
-                __updated_at__: self.__updated_at__,
-                __created_at__: self.__created_at__,
+                updated_at: self.updated_at,
+                created_at: self.created_at,
             };
 
             entity.validate().unwrap();

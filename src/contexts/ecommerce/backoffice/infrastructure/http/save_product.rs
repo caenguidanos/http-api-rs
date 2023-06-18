@@ -15,7 +15,7 @@ pub async fn save_product(
     State(usecase): State<Arc<backoffice::application::usecases::SaveProduct>>,
     extract::Json(body): extract::Json<backoffice::application::usecases::SaveProductInput>,
 ) -> Result<impl IntoResponse, common::domain::Error> {
-    identity_claims.check_permission(common::domain::Permissions::EcommerceCreateProduct)?;
+    identity_claims.check_permission(common::domain::Permissions::EcommerceBackofficeProductCreate)?;
 
     usecase
         .exec(body)

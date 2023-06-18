@@ -5,8 +5,8 @@ CREATE TABLE product
     price    INTEGER NOT NULL,
     currency TEXT    NOT NULL,
 
-    __created_at__ TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    __updated_at__ TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     PRIMARY KEY (id)
 );

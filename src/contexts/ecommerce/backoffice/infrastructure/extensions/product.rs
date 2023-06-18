@@ -18,8 +18,8 @@ impl Serialize for backoffice::domain::product::Product {
         state.serialize_field("name", &self.name.to_primitive())?;
         state.serialize_field("price", &self.price.to_primitive())?;
         state.serialize_field("currency", &self.currency.to_primitive())?;
-        state.serialize_field("__updated_at__", &self.__updated_at__.to_primitive())?;
-        state.serialize_field("__created_at__", &self.__created_at__.to_primitive())?;
+        state.serialize_field("updated_at", &self.updated_at.to_primitive())?;
+        state.serialize_field("created_at", &self.created_at.to_primitive())?;
 
         state.end()
     }
@@ -48,21 +48,21 @@ impl FromRow<'_, PgRow> for backoffice::domain::product::Product {
                 type_name: String::from("ProductCurrency"),
             })?;
 
-        let __created_at__: chrono::DateTime<chrono::offset::Utc> =
+        let created_at: chrono::DateTime<chrono::offset::Utc> =
             row.try_get(4).inspect_err(|err| tracing::error!("{err}"))?;
-        let __created_at__ = backoffice::domain::product::ProductTimeStamp::from(__created_at__);
+        let created_at = backoffice::domain::product::ProductTimeStamp::from(created_at);
 
-        let __updated_at__: chrono::DateTime<chrono::offset::Utc> =
+        let updated_at: chrono::DateTime<chrono::offset::Utc> =
             row.try_get(5).inspect_err(|err| tracing::error!("{err}"))?;
-        let __updated_at__ = backoffice::domain::product::ProductTimeStamp::from(__updated_at__);
+        let updated_at = backoffice::domain::product::ProductTimeStamp::from(updated_at);
 
         Ok(backoffice::domain::product::Product {
             id,
             name,
             price,
             currency,
-            __created_at__,
-            __updated_at__,
+            created_at,
+            updated_at,
         })
     }
 }

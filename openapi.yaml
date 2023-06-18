@@ -67,10 +67,6 @@ components:
         authorizationCode:
           authorizationUrl: __OAUTH_AUTHORIZATION_URL__
           tokenUrl: __OAUTH_TOKEN_URL__
-          scopes:
-            ecommerce.product:read: Read products
-            ecommerce.product:create: Create products
-            ecommerce.product:delete: Delete products
 
   schemas:
     Product:
@@ -92,3 +88,11 @@ components:
           enum:
             - EUR
             - USD
+        updated_at:
+          type: string
+          required: false
+          example: 2023-06-18T16:23:30.760+00:00
+        created_at:
+          type: string
+          required: false
+          example: 2023-06-18T16:23:30.760+00:00

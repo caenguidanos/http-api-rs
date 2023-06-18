@@ -8,8 +8,8 @@ pub struct Product {
     pub name: String,
     pub price: i32,
     pub currency: String,
-    pub __created_at__: String,
-    pub __updated_at__: String,
+    pub created_at: String,
+    pub updated_at: String,
 }
 
 impl From<backoffice::domain::product::Product> for Product {
@@ -19,8 +19,8 @@ impl From<backoffice::domain::product::Product> for Product {
             name: value.name.to_primitive(),
             price: value.price.to_primitive(),
             currency: value.currency.to_primitive(),
-            __created_at__: value.__created_at__.to_primitive(),
-            __updated_at__: value.__updated_at__.to_primitive(),
+            created_at: value.created_at.to_primitive(),
+            updated_at: value.updated_at.to_primitive(),
         }
     }
 }
